@@ -1,5 +1,5 @@
 import { CloseButton, HStack, chakra } from "@chakra-ui/react";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Creator } from "./Creator";
 import { Pause } from "./Pause";
 import { Translate } from "./Translate";
@@ -7,14 +7,9 @@ import { OriginalWord } from "./OriginalWord";
 
 type ConstructorPropsType = {};
 
-export type CreatorType = "WORD" | "TRANSLATE" | "CREATOR" | "PAUSE";
+type PauseType = "P:1" | "P:2" | "P:3" | "P:4" | "P:5";
 
-type PauseElementType = { type: "PAUSE"; value: number };
-type WordType = {
-  type: CreatorType;
-};
-
-type ElementType = PauseElementType | WordType;
+export type ElemType = "W" | "T" | "C" | "P" | PauseType;
 
 const Component = chakra(HStack, {
   baseStyle: {
@@ -30,17 +25,20 @@ const Component = chakra(HStack, {
 });
 
 export const Constructor: FC<ConstructorPropsType> = () => {
-  const [elements, editElement] = useState<ElementType[]>([
-    { type: "CREATOR" },
-    { type: "WORD" },
-    { type: "CREATOR" },
-    { type: "PAUSE", value: 2 },
-    { type: "CREATOR" },
-    { type: "TRANSLATE" },
-    { type: "CREATOR" },
-    { type: "PAUSE", value: 4 },
-    { type: "CREATOR" },
+  const [elements, editElement] = useState<ElemType[]>([
+    "C",
+    "W",
+    "C",
+    "P:2",
+    "C",
   ]);
+
+  useEffect(() => {
+    const string = elements.filter((e) => e !== "C");
+    console.clear();
+    console.info(string);
+  }, [elements]);
+
   const handleClose = (index: number) => {
     editElement((elems) =>
       elems.filter(
@@ -49,51 +47,51 @@ export const Constructor: FC<ConstructorPropsType> = () => {
     );
   };
 
-  const handleCreate = (type: CreatorType, value: number, index: number) =>
+  const handleCreate = (type: ElemType, index: number) =>
     editElement((elems) => {
-      let newarr: ElementType[] = [];
+      let newArrayElements: ElemType[] = [];
 
       elems.forEach((elem, i) => {
         if (index !== i) {
-          newarr.push(elem);
+          newArrayElements.push(elem);
         } else {
-          newarr = newarr.concat([
-            { type: "CREATOR" },
-            { type, value },
-            { type: "CREATOR" },
-          ]);
+          const [element, pause] = type.split(":");
+          const newElement = (
+            pause ? `${element}:${pause}` : element
+          ) as ElemType;
+
+          newArrayElements = [...newArrayElements, "C", newElement, "C"];
         }
       });
 
-      return newarr;
+      return newArrayElements;
     });
 
   return (
     <HStack>
       <Component>
-        {elements.map(({ type, value }, index) => {
+        {elements.map((type, index) => {
           const key = type + index;
 
-          switch (type) {
-            case "CREATOR":
+          const [element, pause] = type.split(":");
+
+          switch (element as ElemType) {
+            case "C":
               return (
-                <Creator
-                  key={key}
-                  onCreate={(t, pause) => handleCreate(t, pause || 1, index)}
-                />
+                <Creator key={key} onCreate={(t) => handleCreate(t, index)} />
               );
 
-            case "PAUSE":
+            case "P":
               return (
                 <Pause
                   key={key}
-                  pause={value}
+                  pause={Number(pause)}
                   onClose={() => handleClose(index)}
                 />
               );
-            case "TRANSLATE":
+            case "T":
               return <Translate key={key} onClose={() => handleClose(index)} />;
-            case "WORD":
+            case "W":
               return (
                 <OriginalWord key={key} onClose={() => handleClose(index)} />
               );
@@ -104,7 +102,7 @@ export const Constructor: FC<ConstructorPropsType> = () => {
         isDisabled={elements.length === 1}
         bgColor={"whiteAlpha.200"}
         _hover={{ bgColor: "whiteAlpha.400" }}
-        onClick={() => editElement([{ type: "CREATOR" }])}
+        onClick={() => editElement(["C"])}
       />
     </HStack>
   );

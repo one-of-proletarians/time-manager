@@ -12,15 +12,15 @@ import {
   chakra,
 } from "@chakra-ui/react";
 import { FC } from "react";
-import { CreatorType } from ".";
 import { CustomBadge } from "./CustomBadge";
+import { ElemType } from ".";
 
 type CreatorPropsType = {
-  onCreate(type: CreatorType, pause?: number): void;
+  onCreate(type: ElemType): void;
 };
 
 type ListType = {
-  type: CreatorType;
+  type: ElemType;
   value: string;
 };
 
@@ -45,15 +45,15 @@ const Dot = chakra("div", {
 export const Creator: FC<CreatorPropsType> = ({ onCreate, ...props }) => {
   const list: ListType[] = [
     {
-      type: "WORD",
+      type: "W",
       value: "Original word",
     },
     {
-      type: "TRANSLATE",
+      type: "T",
       value: "Translate",
     },
     {
-      type: "PAUSE",
+      type: "P",
       value: "Pause",
     },
   ];
@@ -72,7 +72,7 @@ export const Creator: FC<CreatorPropsType> = ({ onCreate, ...props }) => {
       </MenuButton>
       <MenuList>
         {list.map((item) => {
-          if (item.type === "PAUSE") {
+          if (item.type === "P") {
             return (
               <Box key={item.type}>
                 <MenuDivider mb={0} />
@@ -91,7 +91,9 @@ export const Creator: FC<CreatorPropsType> = ({ onCreate, ...props }) => {
                           key={pause}
                           as={MenuItem}
                           w={"auto"}
-                          onClick={() => onCreate(item.type, pause)}
+                          onClick={() =>
+                            onCreate(`${item.type}:${pause}` as ElemType)
+                          }
                           size={"sm"}
                         >
                           {pause}
