@@ -4,12 +4,9 @@ import { Creator } from "./Creator";
 import { Pause } from "./Pause";
 import { Translate } from "./Translate";
 import { OriginalWord } from "./OriginalWord";
+import { ElemType } from "./types";
 
 type ConstructorPropsType = {};
-
-type PauseType = "P:1" | "P:2" | "P:3" | "P:4" | "P:5";
-
-export type ElemType = "W" | "T" | "C" | "P" | PauseType;
 
 const Component = chakra(HStack, {
   baseStyle: {

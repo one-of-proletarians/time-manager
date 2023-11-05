@@ -1,4 +1,4 @@
-import { Box, CloseButton, Text } from "@chakra-ui/react";
+import { CloseButton, Text } from "@chakra-ui/react";
 
 import { FC } from "react";
 import { CustomBadge } from "./CustomBadge";

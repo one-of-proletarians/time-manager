@@ -13,15 +13,10 @@ import {
 } from "@chakra-ui/react";
 import { FC } from "react";
 import { CustomBadge } from "./CustomBadge";
-import { ElemType } from ".";
+import { ElemType, ListType } from "./types";
 
 type CreatorPropsType = {
   onCreate(type: ElemType): void;
-};
-
-type ListType = {
-  type: ElemType;
-  value: string;
 };
 
 const Tag = chakra(CustomBadge, {
@@ -42,19 +37,21 @@ const Dot = chakra("div", {
   },
 });
 
+const seconds = [1, 2, 3, 4, 5];
+
 export const Creator: FC<CreatorPropsType> = ({ onCreate, ...props }) => {
   const list: ListType[] = [
     {
       type: "W",
-      value: "Original word",
+      value: "Слово",
     },
     {
       type: "T",
-      value: "Translate",
+      value: "Перевод",
     },
     {
       type: "P",
-      value: "Pause",
+      value: "Пауза (в секундах)",
     },
   ];
 
@@ -86,14 +83,12 @@ export const Creator: FC<CreatorPropsType> = ({ onCreate, ...props }) => {
                       {item.value}
                     </Text>
                     <HStack>
-                      {[1, 2, 3, 4, 5].map((pause) => (
+                      {seconds.map((pause) => (
                         <Button
                           key={pause}
                           as={MenuItem}
                           w={"auto"}
-                          onClick={() =>
-                            onCreate(`${item.type}:${pause}` as ElemType)
-                          }
+                          onClick={() => onCreate(`P:${pause}` as ElemType)}
                           size={"sm"}
                         >
                           {pause}
