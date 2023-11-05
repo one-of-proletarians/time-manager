@@ -1,6 +1,6 @@
 import { Flex } from "@chakra-ui/react";
 import { FC } from "react";
-import { Constructor } from "./components/constructor/Constructor";
+import { Constructor } from "./components/Constructor";
 
 export const App: FC = () => {
   return (

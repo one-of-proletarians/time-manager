@@ -12,7 +12,7 @@ import {
   chakra,
 } from "@chakra-ui/react";
 import { FC } from "react";
-import { CreatorType } from "./Constructor";
+import { CreatorType } from ".";
 import { CustomBadge } from "./CustomBadge";
 
 type CreatorPropsType = {
