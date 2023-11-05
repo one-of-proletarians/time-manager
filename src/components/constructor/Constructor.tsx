@@ -7,14 +7,9 @@ import { OriginalWord } from "./OriginalWord";
 
 type ConstructorPropsType = {};
 
-export type CreatorType = "WORD" | "TRANSLATE" | "CREATOR" | "PAUSE";
+type PauseType = "P:1" | "P:2" | "P:3" | "P:4" | "P:5";
 
-type PauseElementType = { type: "PAUSE"; value: number };
-type WordType = {
-  type: CreatorType;
-};
-
-type ElementType = PauseElementType | WordType;
+export type ElemType = "W" | "T" | "C" | PauseType;
 
 const Component = chakra(HStack, {
   baseStyle: {
@@ -30,17 +25,7 @@ const Component = chakra(HStack, {
 });
 
 export const Constructor: FC<ConstructorPropsType> = () => {
-  const [elements, editElement] = useState<ElementType[]>([
-    { type: "CREATOR" },
-    { type: "WORD" },
-    { type: "CREATOR" },
-    { type: "PAUSE", value: 2 },
-    { type: "CREATOR" },
-    { type: "TRANSLATE" },
-    { type: "CREATOR" },
-    { type: "PAUSE", value: 4 },
-    { type: "CREATOR" },
-  ]);
+  const [elements, editElement] = useState<ElemType[]>(["C", "W", "C", "P:2"]);
   const handleClose = (index: number) => {
     editElement((elems) =>
       elems.filter(
@@ -49,19 +34,15 @@ export const Constructor: FC<ConstructorPropsType> = () => {
     );
   };
 
-  const handleCreate = (type: CreatorType, value: number, index: number) =>
+  const handleCreate = (type: ElemType, index: number) =>
     editElement((elems) => {
-      let newarr: ElementType[] = [];
+      let newarr: ElemType[] = [];
 
       elems.forEach((elem, i) => {
         if (index !== i) {
           newarr.push(elem);
         } else {
-          newarr = newarr.concat([
-            { type: "CREATOR" },
-            { type, value },
-            { type: "CREATOR" },
-          ]);
+          newarr = newarr.concat(["C", "C"]);
         }
       });
 
@@ -71,23 +52,20 @@ export const Constructor: FC<ConstructorPropsType> = () => {
   return (
     <HStack>
       <Component>
-        {elements.map(({ type, value }, index) => {
+        {elements.map(({ type }, index) => {
           const key = type + index;
 
           switch (type) {
             case "CREATOR":
               return (
-                <Creator
-                  key={key}
-                  onCreate={(t, pause) => handleCreate(t, pause || 1, index)}
-                />
+                <Creator key={key} onCreate={(t) => handleCreate(t, index)} />
               );
 
             case "PAUSE":
               return (
                 <Pause
                   key={key}
-                  pause={value}
+                  pause={33}
                   onClose={() => handleClose(index)}
                 />
               );
@@ -104,7 +82,7 @@ export const Constructor: FC<ConstructorPropsType> = () => {
         isDisabled={elements.length === 1}
         bgColor={"whiteAlpha.200"}
         _hover={{ bgColor: "whiteAlpha.400" }}
-        onClick={() => editElement([{ type: "CREATOR" }])}
+        onClick={() => editElement(["C"])}
       />
     </HStack>
   );
