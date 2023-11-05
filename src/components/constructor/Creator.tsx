@@ -11,9 +11,9 @@ import {
   VStack,
   chakra,
 } from "@chakra-ui/react";
-import { ElementType, FC } from "react";
+import { FC } from "react";
+import { ElemType } from ".";
 import { CustomBadge } from "./CustomBadge";
-import { ElemType } from "./Constructor";
 
 type CreatorPropsType = {
   onCreate(type: ElemType): void;
@@ -53,7 +53,7 @@ export const Creator: FC<CreatorPropsType> = ({ onCreate, ...props }) => {
       value: "Translate",
     },
     {
-      type: "P:4",
+      type: "P",
       value: "Pause",
     },
   ];
@@ -72,7 +72,7 @@ export const Creator: FC<CreatorPropsType> = ({ onCreate, ...props }) => {
       </MenuButton>
       <MenuList>
         {list.map((item) => {
-          if (item === "P") {
+          if (item.type === "P") {
             return (
               <Box key={item.type}>
                 <MenuDivider mb={0} />
@@ -91,7 +91,9 @@ export const Creator: FC<CreatorPropsType> = ({ onCreate, ...props }) => {
                           key={pause}
                           as={MenuItem}
                           w={"auto"}
-                          onClick={() => onCreate(item.type, pause)}
+                          onClick={() =>
+                            onCreate(`${item.type}:${pause}` as ElemType)
+                          }
                           size={"sm"}
                         >
                           {pause}

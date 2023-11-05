@@ -1,5 +1,5 @@
 import { CloseButton, HStack, chakra } from "@chakra-ui/react";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Creator } from "./Creator";
 import { Pause } from "./Pause";
 import { Translate } from "./Translate";
@@ -9,7 +9,7 @@ type ConstructorPropsType = {};
 
 type PauseType = "P:1" | "P:2" | "P:3" | "P:4" | "P:5";
 
-export type ElemType = "W" | "T" | "C" | PauseType;
+export type ElemType = "W" | "T" | "C" | "P" | PauseType;
 
 const Component = chakra(HStack, {
   baseStyle: {
@@ -25,7 +25,20 @@ const Component = chakra(HStack, {
 });
 
 export const Constructor: FC<ConstructorPropsType> = () => {
-  const [elements, editElement] = useState<ElemType[]>(["C", "W", "C", "P:2"]);
+  const [elements, editElement] = useState<ElemType[]>([
+    "C",
+    "W",
+    "C",
+    "P:2",
+    "C",
+  ]);
+
+  useEffect(() => {
+    const string = elements.filter((e) => e !== "C");
+    console.clear();
+    console.info(string);
+  }, [elements]);
+
   const handleClose = (index: number) => {
     editElement((elems) =>
       elems.filter(
@@ -36,42 +49,49 @@ export const Constructor: FC<ConstructorPropsType> = () => {
 
   const handleCreate = (type: ElemType, index: number) =>
     editElement((elems) => {
-      let newarr: ElemType[] = [];
+      let newArrayElements: ElemType[] = [];
 
       elems.forEach((elem, i) => {
         if (index !== i) {
-          newarr.push(elem);
+          newArrayElements.push(elem);
         } else {
-          newarr = newarr.concat(["C", "C"]);
+          const [element, pause] = type.split(":");
+          const newElement = (
+            pause ? `${element}:${pause}` : element
+          ) as ElemType;
+
+          newArrayElements = [...newArrayElements, "C", newElement, "C"];
         }
       });
 
-      return newarr;
+      return newArrayElements;
     });
 
   return (
     <HStack>
       <Component>
-        {elements.map(({ type }, index) => {
+        {elements.map((type, index) => {
           const key = type + index;
 
-          switch (type) {
-            case "CREATOR":
+          const [element, pause] = type.split(":");
+
+          switch (element as ElemType) {
+            case "C":
               return (
                 <Creator key={key} onCreate={(t) => handleCreate(t, index)} />
               );
 
-            case "PAUSE":
+            case "P":
               return (
                 <Pause
                   key={key}
-                  pause={33}
+                  pause={Number(pause)}
                   onClose={() => handleClose(index)}
                 />
               );
-            case "TRANSLATE":
+            case "T":
               return <Translate key={key} onClose={() => handleClose(index)} />;
-            case "WORD":
+            case "W":
               return (
                 <OriginalWord key={key} onClose={() => handleClose(index)} />
               );
