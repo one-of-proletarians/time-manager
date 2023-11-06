@@ -11,7 +11,11 @@ export const App: FC = () => {
       align={"center"}
       justify={"center"}
     >
-      <Constructor />
+      <Constructor
+        onChange={(value) =>
+          console.info("%c[ELEMS]", "background:blue", value)
+        }
+      />
     </Flex>
   );
 };

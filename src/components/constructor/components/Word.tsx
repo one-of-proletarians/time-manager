@@ -1,28 +1,12 @@
 import { CloseButton, Text } from "@chakra-ui/react";
 
 import { FC } from "react";
+import { WordProps } from "../types";
 import { CustomBadge } from "./CustomBadge";
 
-export type WordPropsType = {
-  value: string;
-  onClose(): void;
-  bgColor?: string;
-};
-
-export const Word: FC<WordPropsType> = ({
-  value,
-  onClose,
-  bgColor = "",
-  ...props
-}) => {
+export const Word: FC<WordProps> = ({ value, onClose, ...props }) => {
   return (
-    <CustomBadge
-      bgColor={bgColor}
-      {...props}
-      p={2}
-      position={"relative"}
-      data-group
-    >
+    <CustomBadge data-group p={2} position={"relative"} {...props}>
       <Text
         fontSize={13}
         fontWeight={"bold"}

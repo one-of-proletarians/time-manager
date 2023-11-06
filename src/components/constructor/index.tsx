@@ -1,18 +1,19 @@
 import { CloseButton, HStack, chakra } from "@chakra-ui/react";
 import { FC, useEffect, useState } from "react";
-import { Creator } from "./Creator";
-import { Pause } from "./Pause";
-import { Translate } from "./Translate";
-import { OriginalWord } from "./OriginalWord";
-import { ElemType } from "./types";
-
-type ConstructorPropsType = {};
+import { Creator } from "./components/Creator";
+import { Original } from "./components/Original";
+import { Pause } from "./components/Pause";
+import { Translate } from "./components/Translate";
+import { elementsFromString } from "./helpers/elementsFromString";
+import { ConstructorProps, ElemType } from "./types";
 
 const Component = chakra(HStack, {
   baseStyle: {
-    p: 1,
-    gap: 1,
+    py: 1,
+    px: 0.5,
     minH: 8,
+    minW: 8,
+    justifyContent: "center",
     borderRadius: "md",
     borderStyle: "dashed",
     borderWidth: "2px",
@@ -21,19 +22,15 @@ const Component = chakra(HStack, {
   },
 });
 
-export const Constructor: FC<ConstructorPropsType> = () => {
-  const [elements, editElement] = useState<ElemType[]>([
-    "C",
-    "W",
-    "C",
-    "P:2",
-    "C",
-  ]);
+const defaultElements = elementsFromString("W,P:2,T,P:4");
+// *******************************
+// *******************************
+// *******************************
+export const Constructor: FC<ConstructorProps> = ({ onChange }) => {
+  const [elements, editElement] = useState<ElemType[]>(defaultElements);
 
   useEffect(() => {
-    const string = elements.filter((e) => e !== "C");
-    console.clear();
-    console.info(string);
+    onChange(elements.filter((e) => e !== "C") as ElemType[]);
   }, [elements]);
 
   const handleClose = (index: number) => {
@@ -45,24 +42,16 @@ export const Constructor: FC<ConstructorPropsType> = () => {
   };
 
   const handleCreate = (type: ElemType, index: number) =>
-    editElement((elems) => {
-      let newArrayElements: ElemType[] = [];
+    editElement((elements) =>
+      elements.flatMap((elem, elemIndex) => {
+        if (elemIndex !== index) return elem;
 
-      elems.forEach((elem, i) => {
-        if (index !== i) {
-          newArrayElements.push(elem);
-        } else {
-          const [element, pause] = type.split(":");
-          const newElement = (
-            pause ? `${element}:${pause}` : element
-          ) as ElemType;
+        const [element, pause] = type.split(":");
+        const newElement = (pause ? `P:${pause}` : element) as ElemType;
 
-          newArrayElements = [...newArrayElements, "C", newElement, "C"];
-        }
-      });
-
-      return newArrayElements;
-    });
+        return ["C", newElement, "C"];
+      })
+    );
 
   return (
     <HStack>
@@ -77,29 +66,26 @@ export const Constructor: FC<ConstructorPropsType> = () => {
               return (
                 <Creator key={key} onCreate={(t) => handleCreate(t, index)} />
               );
-
             case "P":
               return (
                 <Pause
                   key={key}
-                  pause={Number(pause)}
+                  pause={pause}
                   onClose={() => handleClose(index)}
                 />
               );
             case "T":
               return <Translate key={key} onClose={() => handleClose(index)} />;
             case "W":
-              return (
-                <OriginalWord key={key} onClose={() => handleClose(index)} />
-              );
+              return <Original key={key} onClose={() => handleClose(index)} />;
           }
         })}
       </Component>
       <CloseButton
         isDisabled={elements.length === 1}
         bgColor={"whiteAlpha.200"}
-        _hover={{ bgColor: "whiteAlpha.400" }}
         onClick={() => editElement(["C"])}
+        _hover={{ bgColor: "whiteAlpha.400" }}
       />
     </HStack>
   );
